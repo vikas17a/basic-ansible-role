@@ -1,0 +1,59 @@
+- name: installing epel release
+  yum: pkg=epel-release state=installed
+  tags:
+    - install epel-release
+
+- name: installing basic tools
+  yum: pkg={{item}} state=installed
+  with_items:
+    - vim
+    - git
+    - python-pip
+    - screen
+
+- name: creating a group for admin
+  group: name=sudoaccess state=present
+  
+- name: giving sudo access to group
+  copy: src=sudoaccess dest=/etc/sudoers.d/sudoaccess mode=0440 validate='visudo -cf %s'
+
+- name: creating a user for admin
+  user: name={{item}} groups=sudoaccess
+  with_items:
+    - vikas
+
+- name: creating a non admin user for application to be deployed
+  user: name={{item}}
+  with_items:
+    - myapp
+
+- name: creating .ssh directory for admin
+  file: path=/home/{{item}}/.ssh state=directory mode=700 owner={{item}}
+  with_items:
+    - vikas
+  tags:
+    - access
+
+- name: copying public key for admin user
+  copy: src={{item}}-authorized_keys dest=/home/{{item}}/.ssh/authorized_keys mode=600 owner={{item}}
+  with_items:
+    - vikas
+  tags:
+    - access
+
+- name: Disable root login
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+  notify: ssh reload
+  tags:
+    - root disable
+
+- name: Disable password login step 1
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+  tags:
+    - password less login
+
+- name: Disable password login step 2
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^ChallengeResponseAuthentication" line="ChallengeResponseAuthentication no" state=present
+  notify: ssh reload
+  tags:
+    - password less login

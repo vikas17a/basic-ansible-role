@@ -1,0 +1,37 @@
+- name: install mysql
+  yum: pkg={{item}} state=installed
+  with_items:
+    - mysql
+    - mysql-server
+    - MySQL-python
+
+- name: starting mysql server
+  service: name=mysqld state=started
+
+- name: setting up root password
+  mysql_user: name=root
+              password="{{ mysql_root_password }}"
+              check_implicit_admin=yes
+              login_user="{{ mysql_user }}"
+              login_password=""
+              state=present
+  ignore_errors: True
+
+- name: creating db for myapplication
+  mysql_db: name={{item}} 
+            state=present 
+            login_user="{{mysql_user}}" 
+            login_password="{{mysql_root_password}}"
+  with_items:
+    - inventory
+
+- name: setting up application user
+  mysql_user: name="{{new_user}}"
+              password="{{ new_user_password }}"
+              check_implicit_admin=yes
+              priv={{item}}.*:ALL
+              login_user="{{mysql_user}}"
+              login_password="{{mysql_root_password}}"
+              state=present
+  with_items:
+    - inventory

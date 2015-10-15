@@ -1,0 +1,4 @@
+mysql_root_password: toooooor
+mysql_user: root
+new_user: myappuser
+new_user_password: userofmyapp
