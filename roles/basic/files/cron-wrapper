@@ -1,0 +1,5 @@
+#!/bin/bash
+
+LOG=/tmp/cron-log
+DATE=`date +%s`
+eval $* &> $LOG-$DATE
