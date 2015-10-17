@@ -1,3 +1,5 @@
+- include_vars: mysql.yml
+
 - name: install mysql
   yum: pkg={{item}} state=installed
   with_items:

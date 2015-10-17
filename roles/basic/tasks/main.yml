@@ -1,3 +1,5 @@
+- include_vars: ulimit.yml
+
 - name: installing epel release
   yum: pkg=epel-release state=installed
   tags:
@@ -27,7 +29,7 @@
   with_items:
     - vikas
 
-- name: creating a non admin user for application to be deployed
+- name: creating user for application to be deployed
   user: name={{item}}
   with_items:
     - myapp
@@ -40,11 +42,18 @@
     - access
 
 - name: copying public key for admin user
-  copy: src={{item}}-authorized_keys dest=/home/{{item}}/.ssh/authorized_keys mode=600 owner={{item}}
+  copy: src=keys/{{item}}-authorized_keys dest=/home/{{item}}/.ssh/authorized_keys mode=600 owner={{item}}
   with_items:
     - vikas
   tags:
     - access
+
+- name: Create ulimit configuration
+  template:
+    src: limits.conf.j2
+    dest: "{{ ulimit_config_location }}"
+  tags:
+    - ulimit_config
 
 - name: Disable root login
   lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
