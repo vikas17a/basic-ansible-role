@@ -1,4 +1,1 @@
-mysql_root_password: toooooor
-mysql_user: root
-new_user: myappuser
-new_user_password: userofmyapp
+__mysql_slow_query_log_file: /var/log/mysql-slow.log

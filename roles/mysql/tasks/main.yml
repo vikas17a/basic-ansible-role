@@ -6,34 +6,61 @@
     - mysql
     - mysql-server
     - MySQL-python
+  tags:
+    - mysql installation
 
 - name: starting mysql server
   service: name=mysqld state=started
+  tags:
+    - starting mysql service
+
+- name: Copy my.cnf global MySQL configuration.
+  template:
+    src: my.cnf.j2
+    dest: "{{ mysql_config_file }}"
+    owner: root
+    group: root
+    mode: 0644
+    force: "{{ overwrite_global_mycnf }}"
+  notify: restart mysql
+
+- name: Create slow query log file (if configured).
+  file: dest={{ mysql_slow_query_log_file }} state=touch
+  when: mysql_slow_query_log_enabled
+
+- name: Set ownership on slow query log file (if configured).
+  file:
+    path: "{{ mysql_slow_query_log_file }}"
+    state: file
+    owner: mysql
+    group: mysql
+    mode: 0644
+  when: mysql_slow_query_log_enabled
 
 - name: setting up root password
-  mysql_user: name=root
-              password="{{ mysql_root_password }}"
+  mysql_user: name={{mysql_root_user}}
+              password={{ mysql_root_password }}
               check_implicit_admin=yes
-              login_user="{{ mysql_user }}"
+              login_user={{mysql_root_user}}
               login_password=""
               state=present
   ignore_errors: True
+  tags:
+    - setting up root password
 
-- name: creating db for myapplication
-  mysql_db: name={{item}} 
+- name: creating dbs for myapplication
+  mysql_db: name={{item.name}} 
             state=present 
-            login_user="{{mysql_user}}" 
-            login_password="{{mysql_root_password}}"
-  with_items:
-    - inventory
+            login_user={{mysql_root_user}}
+            login_password={{mysql_root_password}}
+  with_items: mysql_databases
 
 - name: setting up application user
-  mysql_user: name="{{new_user}}"
-              password="{{ new_user_password }}"
+  mysql_user: name={{item.name}}
+              password={{item.secret}}
               check_implicit_admin=yes
-              priv={{item}}.*:ALL
-              login_user="{{mysql_user}}"
-              login_password="{{mysql_root_password}}"
+              priv={{item.db}}.*:ALL
+              login_user={{mysql_root_user}}
+              login_password={{mysql_root_password}}
               state=present
-  with_items:
-    - inventory
+  with_items: mysql_users
