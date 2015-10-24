@@ -12,6 +12,7 @@
     - git
     - python-pip
     - screen
+    - net-tools
 
 - name: copying cronwrapper
   copy: src=cron-wrapper dest=/usr/bin/cron-wrapper mode=0755
