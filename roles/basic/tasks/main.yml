@@ -14,6 +14,10 @@
     - screen
     - net-tools
 
+- name: installing additional required packages
+  yum: pkg={{item}} state=installed
+  with_items: additional_packages
+
 - name: copying cronwrapper
   copy: src=cron-wrapper dest=/usr/bin/cron-wrapper mode=0755
   tags:
