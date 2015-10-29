@@ -80,7 +80,7 @@
 - name: Additional services need to restart
   service: name={{item}} state=restarted
   with_items: additional_service_restart
-  ignore_erros: true
+  ignore_errors: true
 
 - name: Additional services need to be start
   service: name={{item}} state=started
