@@ -76,3 +76,18 @@
   notify: ssh reload
   tags:
     - password less login
+
+- name: Additional services need to restart
+  service: name={{item}} state=restarted
+  with_items: additional_service_restart
+  ignore_erros: true
+
+- name: Additional services need to be start
+  service: name={{item}} state=started
+  with_items: additional_service_start
+  ignore_errors: true
+
+- name: Additional services need to be reloaded
+  service: name={{item}} state=reloaded
+  with_items: additional_service_reload
+  ignore_errors: true

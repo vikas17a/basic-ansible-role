@@ -1,3 +1,16 @@
 additional_packages:
   - openssl
   - ntp
+  - open-vm-tools
+  - nginx
+
+additional_service_start:
+  - ntpd
+  - vmtoolsd
+  - nginx
+
+additional_service_reload:
+  - nginx
+
+additional_service_restart:
+  - ntpd
