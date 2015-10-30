@@ -1,16 +1,15 @@
+additional_packages_install: true
 additional_packages:
   - openssl
   - ntp
   - open-vm-tools
   - nginx
 
-additional_service_start:
-  - ntpd
-  - vmtoolsd
-  - nginx
+additional_services_handler: true
+additional_services:
+  - {name: 'nginx', state: 'started' }
+  - {name: 'vmtoolsd', state: 'started' }
 
-additional_service_reload:
-  - nginx
-
-additional_service_restart:
-  - ntpd
+configuration_to_be_setup: true
+configuration_setup:
+  - { name: 'nginx', src: 'default.conf', dest: '/etc/nginx/conf.d/default.conf', state: 'reloaded'}

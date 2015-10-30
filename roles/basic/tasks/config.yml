@@ -1,0 +1,7 @@
+- name: setting up configuration files
+  copy: src={{item.src}} dest={{item.dest}}
+  notify: reload config updates
+  with_items: configuration_setup
+  when: configuration_to_be_setup
+  tags:
+    - only_config

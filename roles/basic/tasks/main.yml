@@ -17,6 +17,7 @@
 - name: installing additional required packages
   yum: pkg={{item}} state=installed
   with_items: additional_packages
+  when: additional_packages_install
 
 - name: copying cronwrapper
   copy: src=cron-wrapper dest=/usr/bin/cron-wrapper mode=0755
@@ -77,17 +78,9 @@
   tags:
     - password less login
 
-- name: Additional services need to restart
-  service: name={{item}} state=restarted
-  with_items: additional_service_restart
-  ignore_errors: true
+- name: changing status of required services on demand
+  service: name={{item.name}} state={{item.state}}
+  with_items: additional_services
+  when: additional_services_handler
 
-- name: Additional services need to be start
-  service: name={{item}} state=started
-  with_items: additional_service_start
-  ignore_errors: true
-
-- name: Additional services need to be reloaded
-  service: name={{item}} state=reloaded
-  with_items: additional_service_reload
-  ignore_errors: true
+- include: config.yml

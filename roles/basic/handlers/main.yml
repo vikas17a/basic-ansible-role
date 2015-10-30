@@ -1,2 +1,7 @@
 - name: ssh reload
   service: name=sshd state=reloaded
+
+- name: reload config updates
+  service: name={{item.name}} state={{item.state}}
+  with_items: configuration_setup
+
