@@ -13,6 +13,7 @@
     - python-pip
     - screen
     - net-tools
+    - libselinux-python
 
 - name: installing additional required packages
   yum: pkg={{item}} state=installed
