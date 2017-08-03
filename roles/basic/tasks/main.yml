@@ -81,7 +81,7 @@
 
 - name: changing status of required services on demand
   service: name={{item.name}} state={{item.state}}
-  with_items: additional_services
+  with_items: "{{ additional_services }}"
   when: additional_services_handler
 
 - include: config.yml
