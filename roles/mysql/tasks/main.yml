@@ -53,7 +53,7 @@
             state=present 
             login_user={{mysql_root_user}}
             login_password={{mysql_root_password}}
-  with_items: mysql_databases
+  with_items: "{{ mysql_databases }}"
 
 - name: setting up application user
   mysql_user: name={{item.name}}
@@ -63,7 +63,7 @@
               login_user={{mysql_root_user}}
               login_password={{mysql_root_password}}
               state=present
-  with_items: mysql_users
+  with_items: "{{ mysql_users }}"
 
 - name: Get list of hosts for the anonymous user.
   command: mysql -p{{mysql_root_password}} -NBe 'SELECT Host FROM mysql.user WHERE User = ""'
@@ -77,7 +77,7 @@
      login_user={{mysql_root_user}}
      login_password={{mysql_root_password}}
      state=absent
-  with_items: mysql_anonymous_hosts.stdout_lines
+  with_items: "{{ mysql_anonymous_hosts.stdout_lines }}"
 
 - name: Remove MySQL test database.
   mysql_db: name='test' 
